@@ -18,7 +18,7 @@ class Campo_model extends CI_Model {
             }
             return null;
         }
-        $query = $this->db->query("SELECT c.id,c.nombre,c.estado,c.orden,c.categoria_id,(SELECT nombre from categoria where id=c.categoria_id) as categoria_nombre,c.importancia FROM campo as c where estado=1 and empresa_id=$empresa_id ORDER BY c.categoria_id,c.orden ASC");
+        $query = $this->db->query("SELECT c.id,c.nombre,c.estado,c.orden,c.categoria_id,(SELECT nombre from categoria where id=c.categoria_id) as categoria_nombre,c.importancia FROM campo as c where estado=1  ORDER BY c.categoria_id,c.orden ASC");
         if ($query->num_rows() > 0) {
             return $query->result_array();
         }
@@ -33,7 +33,7 @@ class Campo_model extends CI_Model {
         return null;
     }
 
-    public function save($campo) {
+    /*public function save($campo) {
         $ultimo = $this->db->query("SELECT orden from campo where estado=1 and categoria_id=" . $campo['categoria_id'] . " ORDER BY orden desc limit 1")->row_array();
         $query = $this->db->query("select * from campo where estado=1 and orden=" . $campo['orden'] . " and categoria_id=" . $campo['categoria_id']);
         if ($query->num_rows() === 0) {
@@ -55,7 +55,7 @@ class Campo_model extends CI_Model {
             }
             return $id;
         }
-    }
+    }*/
 
     public function savefull($formulario,$empresa_id) {
         $contador = 0;
@@ -76,8 +76,7 @@ class Campo_model extends CI_Model {
                     'nombre' => $campo['nombre'],
                     'orden' => $campo['orden'],
                     'importancia' => $campo['importancia'],
-                    'categoria_id' => $idCat,
-                    'empresa_id' => $empresa_id      
+                    'categoria_id' => $idCat   
                 );
                 $this->db->set($datos)->insert('campo');
                 if ($this->db->affected_rows() === 1) {
@@ -88,7 +87,7 @@ class Campo_model extends CI_Model {
         return $contador;
     }
 
-    public function saveCategoria($campo) {
+    /*public function saveCategoria($campo) {
         $contador = 0;
         $arrId = array();
         foreach ($campo as $cam) {
@@ -106,7 +105,7 @@ class Campo_model extends CI_Model {
             }
             return null;
         }
-    }
+    }*/
 
     public function estado($id) {
         $this->db->query("update campo set estado=0 where id=$id");
@@ -116,7 +115,7 @@ class Campo_model extends CI_Model {
         return null;
     }
 
-    public function update($id, $campo) {
+    /*public function update($id, $campo) {
         $query = $this->db->query("select * from campo where estado=1 and id=$id");
         if ($query->num_rows() === 1) {
             $viejo = $query->row_array();
@@ -147,9 +146,9 @@ class Campo_model extends CI_Model {
         } else {
             return null;
         }
-    }
+    }*/
 
-    public function updateCategoria($idcat, $campo) {
+    /*public function updateCategoria($idcat, $campo) {
         $this->db->query("update campo set estado=0 where categoria_id=$idcat");
         $contador = 0;
         $arrId = array();
@@ -168,9 +167,9 @@ class Campo_model extends CI_Model {
             }
             return null;
         }
-    }
+    }*/
 
-    public function updatefull($campo) {
+    /*public function updatefull($campo) {
         $this->db->query("update campo set estado=0 ");
         $contador = 0;
         $arrId = array();
@@ -189,9 +188,9 @@ class Campo_model extends CI_Model {
             }
             return null;
         }
-    }
+    }*/
 
-    public function delete($id) {
+    /*public function delete($id) {
         $query = $this->db->query("select * from campo where id=$id");
         if ($query->num_rows() === 1) {
             $this->db->query("update campo set estado=0 where id=$id");
@@ -219,7 +218,7 @@ class Campo_model extends CI_Model {
         } else {
             return null;
         }
-    }
+    }*/
 
     public function deletefull($empresa_id) {
 

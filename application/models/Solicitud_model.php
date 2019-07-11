@@ -51,27 +51,35 @@ class Solicitud_model extends CI_Model{
     private function _setSolicitud($solicitud)
     {
         return array(
+            'rut' => $solicitud['rut'],
+            'dv' => $solicitud['dv'],
+            'nombres' => $solicitud['nombres'],
+            'apellidos' => $solicitud['apellidos'],
+            'email' => $solicitud['email'],
+            'celular' => $solicitud['celular'],
             'modelo' => $solicitud['modelo'],
             'año' => $solicitud['año'],
             'patente' => $solicitud['patente'],
             'kilometros' => $solicitud['kilometros'],
-            'marca_id' => $solicitud['marca_id'],
-            'cliente_usuario_id' => $solicitud['cliente_usuario_id'],
-            'solicitud_tipo_id' => $solicitud['solicitud_tipo_id']
+            'marca_id' => $solicitud['marca_id']
         );
     }
     private function _setSolicitudUpdate($solicitud)
     {
         return array(
+            'rut' => $solicitud['rut'],
+            'dv' => $solicitud['dv'],
+            'nombres' => $solicitud['nombres'],
+            'apellidos' => $solicitud['apellidos'],
+            'email' => $solicitud['email'],
+            'celular' => $solicitud['celular'],
             'modelo' => $solicitud['modelo'],
             'año' => $solicitud['año'],
             'patente' => $solicitud['patente'],
             'kilometros' => $solicitud['kilometros'],
             'estado' => $solicitud['estado'],
-            'marca_id' => $solicitud['marca_id'],
-            'cliente_usuario_id' => $solicitud['cliente_usuario_id'],
-            'cancelacion_id' => $solicitud['cancelacion_id'],
-            'solicitud_tipo_id' => $solicitud['solicitud_tipo_id']
+            'marca_id' => $solicitud['marca_id']
         );
     }
+
 }

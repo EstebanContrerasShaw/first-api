@@ -79,9 +79,9 @@ class Inspeccion_model extends CI_Model{
         return array(
             'numero_de_orden' => $sgte['sgte'],
             'mecanico_usuario_id' => $inspeccion['mecanico_usuario_id'],
-            'admin_usuario_id' => $inspeccion['admin_usuario_id'],
             'solicitud_id' => $inspeccion['solicitud_id'],
             'observaciones' => $inspeccion['observaciones'],
+            'empresa_id' => $inspeccion['empresa_id']
         );
     }
     private function _setInspeccionUpdate($inspeccion)
@@ -93,8 +93,7 @@ class Inspeccion_model extends CI_Model{
             'estado' => $inspeccion['estado'],
             'puntaje' => $inspeccion['puntaje'],
             'observaciones' => $inspeccion['observaciones'],
-            'solicitud_id' => $inspeccion['solicitud_id'],
-            'cancelacion_id' => $inspeccion['cancelacion_id']
+            'solicitud_id' => $inspeccion['solicitud_id']
         );
     }
 }

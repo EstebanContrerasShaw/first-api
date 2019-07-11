@@ -10,7 +10,7 @@ class Mecanico_model extends CI_Model {
 
     public function get($id = null) {
         if (!is_null($id)) {
-            $conid = "SELECT u.id,u.rut,u.dv,u.nombres,u.apellidos,u.email,u.celular,u.estado,u.registro_fecha_hora,u.usuario_tipo_id,(SELECT nombre from usuario_tipo WHERE id=u.usuario_tipo_id) as tipo,m.foto_perfil_ruta,m.direccion,m.comuna_id,(SELECT nombre FROM comuna WHERE id=m.comuna_id) as comuna, m.password, m.empresa_id, (SELECT empresa FROM empresa WHERE id=m.empresa_id) as empresa FROM usuario as u, mecanico as m WHERE m.usuario_id=u.id  AND u.id=$id";
+            $conid = "SELECT u.id,u.rut,u.dv,u.nombres,u.apellidos,u.email,u.celular,u.estado,u.registro_fecha_hora,u.usuario_tipo_id,(SELECT nombre from usuario_tipo WHERE id=u.usuario_tipo_id) as tipo,m.foto_perfil_ruta,m.direccion,m.comuna_id,(SELECT nombre FROM comuna WHERE id=m.comuna_id) as comuna, m.password, u.empresa_id, (SELECT empresa FROM empresa WHERE id=u.empresa_id) as empresa FROM usuario as u, mecanico as m WHERE m.usuario_id=u.id  AND u.id=$id";
             $query = $this->db->query($conid);
             //$query = $this->db->select('*')->from('mecanico')->where('usuario_id', $id)->get();
             if ($query->num_rows() === 1) {
@@ -25,7 +25,7 @@ class Mecanico_model extends CI_Model {
             return null;
         }
 
-         $sentencia = "SELECT u.id,u.rut,u.dv,u.nombres,u.apellidos,u.email, u.estado, m.empresa_id, u.celular, (SELECT COUNT(inspeccion.id) FROM inspeccion WHERE inspeccion.mecanico_usuario_id=u.id and inspeccion.estado<3) as pendientes  FROM usuario as u, mecanico as m WHERE m.usuario_id=u.id";
+         $sentencia = "SELECT u.id,u.rut,u.dv,u.nombres,u.apellidos,u.email, u.estado, u.empresa_id, u.celular, (SELECT COUNT(inspeccion.id) FROM inspeccion WHERE inspeccion.mecanico_usuario_id=u.id and inspeccion.estado<3) as pendientes  FROM usuario as u, mecanico as m WHERE m.usuario_id=u.id";
         $query = $this->db->query($sentencia);
         //$query = $this->db->select('*')->from('mecanico')->get();
         if ($query->num_rows() > 0) {
@@ -34,7 +34,7 @@ class Mecanico_model extends CI_Model {
         return null;
     }
 
-    public function save($id, $mecanico) {
+    /*public function save($id, $mecanico) {
         $this->db->set($this->_setMecanico($id, $mecanico))->insert('mecanico');
         if ($this->db->affected_rows() === 1) {
             
@@ -44,33 +44,110 @@ class Mecanico_model extends CI_Model {
     }
 
     public function update($id, $mecanico) {
-        $query = $this->db->select('*')->from('mecanico')->where('usuario_id', $id)->get();
-        $arreglo = $query->row_array();
-        $antigua = $arreglo['foto_perfil_ruta'];
-        $nueva = $this->fotoTemp($mecanico['imagen']);
-        $tamanno = $this->compararTamanno($antigua, $nueva);
-        if (!is_null($tamanno)) {
-            $this->reemplazarFoto($mecanico['imagen'], $antigua);
-        }
-        unlink($nueva);
+        $sentencia = "SELECT rut FROM usuario WHERE id=$id";
+        $query = $this->db->query($sentencia)->row_array();
+        $this->subirFoto($mecanico['imagen'], $query['rut'], $mecanico['empresa_id']);
         $this->db->set($this->_setMecanicoUpdate($mecanico))->where('usuario_id', $id)->update('mecanico');
-        if ($this->db->affected_rows() === 1 || $tamanno) {
+        if ($this->db->affected_rows() === 1 ) {
             return true;
         }
 
         return null;
+    }*/
+
+    public function save($mecanico) {
+        $queryRut = $this->db->select('id')->from('usuario')->where('rut', $mecanico['rut'])->get();
+        if ($queryRut->num_rows() === 1) {
+            return (-1);    
+            
+        }
+        $queryMail = $this->db->select('*')->from('usuario')->where('email', $mecanico['email'])->get();
+        if ($queryMail->num_rows() === 1) {
+            return (-2);
+        }
+        $this->db->set($this->_setUsuario($mecanico))->insert('usuario');
+        if ($this->db->affected_rows() === 1) { 
+            $id=$this->db->insert_id();
+            $this->db->set($this->_setMecanico($id,$mecanico))->insert('mecanico');
+            return $id;
+        }
+        return null;
+    }
+
+
+    public function update($id,$mecanico)
+    {
+
+        $this->db->set($this->_setMecanicoUpdate($mecanico))->where('usuario_id', $id)->update('mecanico');
+        $this->db->set($this->_setUsuarioUpdate($mecanico))->where('id', $id)->update('usuario');
+        if ($this->db->affected_rows() > 0) {
+            return true;
+        }
+        return null;
+    }
+
+    public function actualizarEstados($mecanicos){
+        $cont = 0;
+        $flag=true;
+        if(!empty($mecanicos['desactivar'])){
+            foreach ($mecanicos['desactivar'] as $des) {
+                if($this->getEstado($des) == 1){
+                   $aux = $this->estadoOff($des);
+                    if(!is_null($aux)){
+                        $cont++;
+                    } 
+                }else{
+                    $cont++;
+                }
+            }
+        }
+        if(!empty($mecanicos['activar'])){
+            foreach ($mecanicos['activar'] as $act) {
+                if($this->getEstado($act) == 0){
+                    $aux = $this->estadoOn($act);
+                    if(!is_null($aux)){
+                        $cont++;
+                    }
+                }else{
+                    $cont++;
+                }
+            }
+        }
+        
+        if($cont != (count($mecanicos['desactivar'])) + count($mecanicos['activar'])){
+            $flag = null;
+        }
+        return $flag;
+    }
+
+    public function resetPagados($mecanicos){
+        $cont=0;
+        $flag = true;
+        if(!empty($mecanicos)){
+            foreach ($mecanicos as $mec) {
+                $aux = $this->setPagado($mec);
+                if(!is_null($aux)){
+                    $cont++;
+                }
+            }
+        }
+        
+        if($cont != (count($mecanicos))){
+            $flag = false;
+        }
+        return $flag;
     }
 
     public function getEstado($id) {
-        $this->db->query("SELECT estado FROM usuario WHERE id=$id ");
+        $query = $this->db->query("SELECT estado FROM usuario WHERE usuario_tipo_id IN (3,4) AND id=$id ");
         if ($this->db->affected_rows() === 1) {
-            return $query->row_array()['estado'];;
+            return $query->row_array()['estado'];
         }
         return null;
     }
 
     public function estadoOff($id) {
-        $this->db->query("update usuario set estado=0 where id=$id ");
+        $this->db->query("UPDATE usuario set estado=0 where usuario_tipo_id IN (3,4) AND id=$id ");
         if ($this->db->affected_rows() === 1) {
             return true;
         }
@@ -78,7 +155,7 @@ class Mecanico_model extends CI_Model {
     }
 
     public function estadoOn($id) {
-        $this->db->query("update usuario set estado=1 where id=$id ");
+        $this->db->query("UPDATE usuario set estado=1 where usuario_tipo_id IN (3,4) AND id=$id ");
         if ($this->db->affected_rows() === 1) {
             return true;
         }
@@ -89,8 +166,18 @@ class Mecanico_model extends CI_Model {
     {
         $query=$this->db->query("SELECT empresa from empresa WHERE id=(SELECT empresa_id FROM mecanico WHERE usuario_id=(SELECT mecanico_usuario_id from inspeccion where id=$id))");
         if ($this->db->affected_rows() === 1) {
-            $email=$query->row_array();
-            return $email['empresa'];
+            $empresa=$query->row_array();
+            return $empresa['empresa'];
+        }
+        return null;
+    }
+
+    public function getEmpresaPorId($id)
+    {
+        $query=$this->db->query("SELECT empresa from empresa WHERE id=$id");
+        if ($this->db->affected_rows() === 1) {
+            $empresa=$query->row_array();
+            return $empresa['empresa'];
         }
         return null;
     }
@@ -121,52 +208,75 @@ class Mecanico_model extends CI_Model {
         $clave = password_hash($mecanico["password"], PASSWORD_DEFAULT);
         return array(
             'usuario_id' => $id,
-            'foto_perfil_ruta' => $this->subirFoto($mecanico['imagen'], $mecanico['rut']),
+            'foto_perfil_ruta' => $this->subirFoto($mecanico['imagen'], $mecanico['rut'], $mecanico['empresa_id']),
             'password' => $clave,
             'direccion' => $mecanico['direccion'],
-            'comuna_id' => $mecanico['comuna_id'],
-            'empresa_id' => $mecanico['empresa_id']
+            'comuna_id' => $mecanico['comuna_id']
         );
     }
 
     private function _setMecanicoUpdate($mecanico) {
-
         $clave = password_hash($mecanico["password"], PASSWORD_DEFAULT);
         return array(
             'password' => $clave,
             'direccion' => $mecanico['direccion'],
-            'comuna_id' => $mecanico['comuna_id'],
-            'empresa_id' => $mecanico['empresa_id']
+            'comuna_id' => $mecanico['comuna_id']
         );
     }
 
-    private function compararTamanno($antigua, $nueva) {
+    private function _setUsuario($usuario) {
+        return array(
+            'rut' => $usuario['rut'],
+            'dv' => $usuario['dv'],
+            'nombres' => $usuario['nombres'],
+            'apellidos' => $usuario['apellidos'],
+            'email' => $usuario['email'],
+            'celular' => $usuario['celular'],
+            'usuario_tipo_id' => 4,
+            'empresa_id' => $usuario['empresa_id']
+        );
+    }
+
+    private function _setUsuarioUpdate($usuario) {
+        /* 'rut' => $usuario['rut'],
+          'dv' => $usuario['dv'], */
+        return array(
+            'nombres' => $usuario['nombres'],
+            'apellidos' => $usuario['apellidos'],
+            'email' => $usuario['email'],
+            'celular' => $usuario['celular'],
+            'estado' => $usuario['estado'],
+            'empresa_id' => $usuario['empresa_id']
+        );
+    }
+
+
+    /*private function compararTamanno($antigua, $nueva) {
         if (md5_file($antigua) != md5_file($nueva)) {
             return true;
         }
         return null;
     }
+    private function reemplazarFoto($imagen, $ruta) {
+        $data = base64_decode($imagen);
+        file_put_contents($ruta, $data);
+        return $ruta;
+    }*/
 
-    private function agregarImagen($ruta) {
+     private function agregarImagen($ruta) {
         $imgreal = file_get_contents($ruta);
         $imgstr = base64_encode($imgreal);
         return $imgstr;
     }
 
-    private function reemplazarFoto($imagen, $ruta) {
-        $data = base64_decode($imagen);
-        file_put_contents($ruta, $data);
-        return $ruta;
-    }
-
-    private function subirFoto($imagen, $nombre) {
+    private function subirFoto($imagen, $nombre,$empresaId) {
         //$urlnombre = explode(".", $_SERVER['HTTP_HOST']);
         //$subdominio = $urlnombre[0];
-        $subdominio = $this->mecanico_model->getEmpresa($idInspeccion);;
-        $image_path = 'anexos/'.$subdominio.'/fotosmecanico/';
+        $empresa = $this->getEmpresaPorId($empresaId);
+        $image_path = 'anexos/'.$empresa.'/fotosmecanico/';
         if (!file_exists($image_path)) {
-            if(!is_dir('anexos/'.$subdominio)){
-                mkdir('anexos/'.$subdominio, 0777);
+            if(!is_dir('anexos/'.$empresa)){
+                mkdir('anexos/'.$empresa, 0777);
             }
             mkdir($image_path, 0777);
         }
@@ -178,23 +288,5 @@ class Mecanico_model extends CI_Model {
         return $ruta;
     }
 
-    private function fotoTemp($imagen) {
-        //$urlnombre = explode(".", $_SERVER['HTTP_HOST']);
-        //$subdominio = $urlnombre[0];
-        $subdominio = $this->mecanico_model->getEmpresa($idInspeccion);
-        $image_path = 'anexos/'.$subdominio.'/fotosmecanico/';
-        if (!file_exists($image_path)) {
-            if(!is_dir('anexos/'.$subdominio)){
-                mkdir('anexos/'.$subdominio, 0777);
-            }
-            mkdir($image_path, 0777);
-        }
-        $baseImagen = $imagen;
-        $data = base64_decode($baseImagen);
-        $ruta = $image_path . 'temp.jpg';
-        file_put_contents($ruta, $data);
-
-        return $ruta;
-    }
 
 }

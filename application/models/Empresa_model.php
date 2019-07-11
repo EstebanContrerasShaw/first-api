@@ -21,6 +21,11 @@ class Empresa_model extends CI_Model{
         $query = $this->db->select('*')->from('empresa')->get();
         if ($query->num_rows() > 0) {
             return $query->result_array();
+            /*$todas = $query->result_array();
+            foreach ($todas as &$emp) {
+                $emp['imagen'] = $this->agregarImagen($emp['logo']);
+            }
+            return $todas;*/
         }
         return null;
     }

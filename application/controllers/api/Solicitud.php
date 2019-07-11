@@ -8,9 +8,6 @@ class Solicitud extends REST_Controller{
 public function __construct() {
         parent::__construct();
         $this->load->model('solicitud_model');
-        $this->load->model('solicitud_vip_model');
-        $this->load->model('solicitud_programada_model');
-        $this->load->model('solicitud_express_model');
         $this->load->library('Authorization_Token');
     }
 
@@ -47,7 +44,7 @@ public function __construct() {
         if (!is_null($solicitud)) {
             $this->response(array('status'=>TRUE,'solicitud' => $solicitud), REST_Controller::HTTP_OK);
         } else {
-            $this->response(array('status'=>FALSE,'error' => 'solicitud no encontrado...'), REST_Controller::HTTP_NOT_FOUND);
+            $this->response(array('status'=>FALSE,'error' => 'solicitud no encontrada...'), REST_Controller::HTTP_NOT_FOUND);
         }
         } else {
             if (empty($is_valid_token) || $is_valid_token['status'] === FALSE) {
@@ -59,28 +56,32 @@ public function __construct() {
     }
     
     
-    /*public function index_post(){
+    public function index_post(){
+        //validar token
+        header("Access-Control-Allow-Origin: *");
+        $is_valid_token = $this->authorization_token->validateToken();
+        $usuario_token = $this->authorization_token->userData();
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1,3,4,5)))) {
         if (!$this->post('solicitud')) {
             $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
         }
         $solicitud = $this->post('solicitud');
         $id = $this->solicitud_model->save($solicitud);
         if (!is_null($id)) {
-            if ($solicitud['tipo'] === 'programada') {
-                $this->solicitud_programada_model->save($id, $solicitud);
-            }
-            if ($solicitud['tipo'] === 'express') {
-                $this->solicitud_express_model->save($id, $solicitud);
-            }
-            if ($solicitud['tipo'] === 'vip') {
-                $this->solicitud_vip_model->save($id, $solicitud);
-            }
             $this->response(array('status'=>TRUE,'solicitud' => $id), REST_Controller::HTTP_OK);
         } else {
             $this->response(array('status'=>FALSE,'error'=> 'Algo se ha roto en el servidor...'), REST_Controller::HTTP_BAD_REQUEST);
         }
+        }else {
+            if (empty($is_valid_token) || $is_valid_token['status'] === FALSE) {
+                $this->response(['status' => FALSE, 'message' => $is_valid_token['message']], REST_Controller::HTTP_NOT_FOUND);
+            } else {
+                $this->response(['status' => FALSE, 'message' => 'Invalid user'], REST_Controller::HTTP_NOT_FOUND);
+            }
+        }
     }
-    public function index_put($id){
+
+    /*public function index_put($id){
         if (!$this->put('solicitud')) {
             $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
         }
@@ -96,11 +97,12 @@ public function __construct() {
         }
         $update = $this->solicitud_model->update($id,$this->put('solicitud'));
         if (!is_null($update) && !is_null($foranea)) {
-            $this->response(array('status'=>TRUE,'solicitud' => 'solicitud actualizado!'), REST_Controller::HTTP_OK);
+            $this->response(array('status'=>TRUE,'solicitud' => 'solicitud actualizada!'), REST_Controller::HTTP_OK);
         } else {
             $this->response(array('status'=>FALSE,'error'=> 'Algo se ha roto en el servidor...'), REST_Controller::HTTP_BAD_REQUEST);
         }
     }
+
     public function index_delete($id){
         if (!$id) {
             $this->response(null, REST_Controller::HTTP_BAD_REQUEST);

@@ -11,17 +11,14 @@ class Inspeccion extends REST_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('inspeccion_model');
-        $this->load->model('valor_campo_model');
-        $this->load->model('log_inspeccion_model');
-        $this->load->model('valor_campo_model');
+        $this->load->model('solicitud_model');
+        $this->load->model('admin_model');
         $this->load->model('mecanico_model');
-        $this->load->model('cliente_model');
         $this->load->model('categoria_model');
         $this->load->model('campo_model');
-        $this->load->model('solicitud_model');
+        $this->load->model('valor_campo_model');
         $this->load->model('fotos_auto_model');
-        $this->load->model('admin_model');
-        $this->load->model('cancelacion_model');
+        $this->load->model('empresa_model');
         $this->load->library('Authorization_Token');
     }
 
@@ -58,10 +55,6 @@ class Inspeccion extends REST_Controller {
             $inspeccion = $this->inspeccion_model->get($id);
             $inspeccion['mecanico_usuario_id'] = $this->mecanico_model->get($inspeccion['mecanico_usuario_id']);
             $inspeccion['solicitud_id'] = $this->solicitud_model->get($inspeccion['solicitud_id']);
-            $inspeccion['admin_usuario_id'] = $this->admin_model->get($inspeccion['admin_usuario_id']);
-            if (!is_null($inspeccion['cancelacion_id'])) {
-                $inspeccion['cancelacion_id'] = $this->cancelacion_model->get($inspeccion['cancelacion_id']);
-            }
             if (!is_null($inspeccion)) {
                 $this->response(array('status' => TRUE, 'inspeccion' => $inspeccion), REST_Controller::HTTP_OK);
             } else {
@@ -496,7 +489,7 @@ class Inspeccion extends REST_Controller {
     private function pdf($idInspeccion) {
         $data = $this->getData($idInspeccion);
         if (!is_null($data)) {
-            $empresa = $this->mecanico_model->getEmpresa($idInspeccion);
+            $empresa = $data['empresa'];
             $fotos = $this->fotos_auto_model->getPDFInspeccion($idInspeccion);
             $html = $this->load->view('Inspeccion_view', $data, true);
             $data2['fotos'] = $fotos;
@@ -528,17 +521,14 @@ class Inspeccion extends REST_Controller {
     private function getData($idInspeccion) {
         $inspeccion = $this->inspeccion_model->get($idInspeccion);
         if (!is_null($inspeccion)) {
-            $empresa = $this->mecanico_model->getEmpresa($idInspeccion);
+            $empresa = $this->empresa_model->get($inspeccion['empresa_id']);
             $solicitud = $this->solicitud_model->get($inspeccion['solicitud_id']);
-            $id_cliente = $solicitud['cliente_usuario_id'];
             $detalle = $this->valor_campo_model->getPdfInspeccion($idInspeccion);
-            $cliente = $this->cliente_model->get($id_cliente);
-
             $mecanico = $this->mecanico_model->get($inspeccion['mecanico_usuario_id']);
 
-            $data['empresa'] = $empresa;
+            $data['empresa'] = $empresa['empresa'];
             $data['detalle'] = $detalle;
-            $data['cliente'] = $cliente;
+            $data['solicitud'] = $solicitud;
             $data['mecanico'] = $mecanico;
             $data['inspeccion'] = $inspeccion;
 
@@ -548,57 +538,57 @@ class Inspeccion extends REST_Controller {
     }
 
     private function correo($idInspeccion) {
+        $inspeccion = $this->inspeccion_model->get($idInspeccion);
+        if (!is_null($inspeccion)) {
+            $cliente= $this->solicitud_model->get($inspeccion['solicitud_id'])['email'];
+            $empresa= $this->empresa_model->get($nspeccion['empresa_id'])['empresa'];
 
-
-        $cliente= $this->cliente_model->getMailCliente($idInspeccion);
-        $empresa= $this->mecanico_model->getEmpresa($idInspeccion);
-        if(is_null($cliente) || is_null($empresa)){
-            $this->response(array('error' => 'Inspeción Inválida'), REST_Controller::HTTP_NOT_FOUND);
-        }
-        //$urlnombre = explode(".", $_SERVER['HTTP_HOST']);
-        //$subdominio = $urlnombre[0];
-        $archivo = 'anexos/'.$empresa.'/informes/Inspeccion-' . $idInspeccion . '.pdf';
+            $archivo = 'anexos/'.$empresa.'/informes/Inspeccion-' . $idInspeccion . '.pdf';
         
-        if (file_exists($archivo)) {
+            if (file_exists($archivo)) {
 
-            
-            $config = array();
-            $config['smtp_host'] = 'smtp.gmail.com';
-            $config['smtp_port'] = '587';
-            $config['smtp_user'] = 'optimuscarcorreo@gmail.com';
-            $config['_smtp_auth'] = TRUE;
-            $config['smtp_pass'] = 'ko8L1fR45i';
-            $config['smtp_crypto'] = 'tls';
-            $config['protocol'] = 'smtp';
-            $config['mailpath'] = "/usr/bin/sendmail";
-            $config['mailtype'] = 'html';
-            $config['send_multipart'] = FALSE;
-            $config['charset'] = 'utf-8';
-            $config['wordwrap'] = TRUE;
+                
+                $config = array();
+                $config['smtp_host'] = 'smtp.gmail.com';
+                $config['smtp_port'] = '587';
+                $config['smtp_user'] = 'optimuscarcorreo@gmail.com';
+                $config['_smtp_auth'] = TRUE;
+                $config['smtp_pass'] = 'ko8L1fR45i';
+                $config['smtp_crypto'] = 'tls';
+                $config['protocol'] = 'smtp';
+                $config['mailpath'] = "/usr/bin/sendmail";
+                $config['mailtype'] = 'html';
+                $config['send_multipart'] = FALSE;
+                $config['charset'] = 'utf-8';
+                $config['wordwrap'] = TRUE;
 
-            $mensaje="<html>
-                    <head></head>
-                    <body>
-                        <p>
-                            Este mail es generado de manera automática, por favor NO RESPONDER.<br>
-                        </p>
-                    </body>
-                    </html>";
-            
-            $this->load->library('email');
-            $this->email->initialize($config);
-            $this->email->set_newline("\r\n");
-            $this->email->from('optimuscarcorreo@gmail.com', 'OptimusCar');
-            $this->email->to($cliente);
-            $this->email->subject('PDF formulario');
-            $this->email->message($mensaje);
-            $this->email->attach($archivo);
-            $this->email->send();
+                $mensaje="<html>
+                        <head></head>
+                        <body>
+                            <p>
+                                Este mail es generado de manera automática, por favor NO RESPONDER.<br>
+                            </p>
+                        </body>
+                        </html>";
+                
+                $this->load->library('email');
+                $this->email->initialize($config);
+                $this->email->set_newline("\r\n");
+                $this->email->from('optimuscarcorreo@gmail.com', 'OptimusCar');
+                $this->email->to($cliente);
+                $this->email->subject('PDF formulario');
+                $this->email->message($mensaje);
+                $this->email->attach($archivo);
+                $this->email->send();
 
-            //var_dump($this->email->print_debugger());
-        } else {
+                //var_dump($this->email->print_debugger());
+            } else {
+                $this->response(array('error' => 'Inspeción Inválida'), REST_Controller::HTTP_NOT_FOUND);
+            }
+        }else{
             $this->response(array('error' => 'Inspeción Inválida'), REST_Controller::HTTP_NOT_FOUND);
         }
+        
     }
 
 }

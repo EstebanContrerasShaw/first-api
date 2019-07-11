@@ -24,7 +24,7 @@ class Categoria_model extends CI_Model {
         return null;
     }
 
-    public function save($categoria) {
+    /*public function save($categoria) {
         $ultimo = $this->db->query("SELECT orden from categoria where estado=1 ORDER BY orden desc limit 1")->row_array();
         $query = $this->db->query("select * from categoria where estado=1 and orden=" . $categoria['orden']);
         if ($query->num_rows() === 0) {
@@ -46,7 +46,7 @@ class Categoria_model extends CI_Model {
             }
             return $id;
         }
-    }
+    }*/
 
     public function estado($id) {
         $this->db->query("update categoria set estado=0 where id=$id");
@@ -56,7 +56,7 @@ class Categoria_model extends CI_Model {
         return null;
     }
 
-    public function update($id, $categoria) {
+    /*public function update($id, $categoria) {
         $query = $this->db->query("select * from categoria where estado=1 and id=$id");
         if ($query->num_rows() === 1) {
             $viejo = $query->row_array();
@@ -103,7 +103,52 @@ class Categoria_model extends CI_Model {
         } else {
             return null;
         }
+    }*/
+
+
+
+    public function savefull($formulario,$empresa_id) {
+        $contador = 0;
+        $idCat=0;
+        $arrId = array();
+        foreach ($formulario as $catego) {
+            $data=array(
+                'nombre' => $catego['nombre'],
+                'orden' => $catego['orden'],
+                'empresa_id' => $empresa_id
+            );
+            $this->db->set($data)->insert('categoria');
+            if ($this->db->affected_rows() === 1) {
+                $idCat=$this->db->insert_id();
+            }
+            foreach ($catego['campo'] as $campo) {
+                $datos=array(
+                    'nombre' => $campo['nombre'],
+                    'orden' => $campo['orden'],
+                    'importancia' => $campo['importancia'],
+                    'categoria_id' => $idCat   
+                );
+                $this->db->set($datos)->insert('campo');
+                if ($this->db->affected_rows() === 1) {
+                    $contador++;
+                }
+            }
+        }
+        return $contador;
     }
+
+    public function deletefull($empresa_id) {
+
+        $arrCat = $this->db->query("SELECT id FROM categoria WHERE empresa_id=$empresa_id")->result_array();
+        foreach ($arrCat as $cat) {
+            $idCat=$cat['id'];
+            $this->db->query("UPDATE campo SET estado=0 WHERE categoria_id=$idCat");    
+        }
+        $this->db->query("UPDATE categoria SET estado=0 WHERE empresa_id=$empresa_id");
+        return TRUE;
+    }
+
+
 
     /*
       public function update($id,$categoria)
@@ -143,4 +188,12 @@ class Categoria_model extends CI_Model {
         );
     }
 
+    private function _setCampo($campo) {
+        return array(
+            'nombre' => $campo['nombre'],
+            'orden' => $campo['orden'],
+            'importancia' => $campo['importancia'],
+            'categoria_id' => $campo['categoria_id']
+        );
+    }
 }

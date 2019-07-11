@@ -58,7 +58,33 @@ class Categoria extends REST_Controller {
         }
     }
 
-    public function index_post() {
+    public function full_post() {
+        //validar token
+        header("Access-Control-Allow-Origin: *");
+        $is_valid_token = $this->authorization_token->validateToken();
+        $usuario_token = $this->authorization_token->userData();
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1,5)))) {
+            if (!$this->post('formulario')) {
+                $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
+            }
+            $this->ctegoria_model->deletefull($usuario_token->empresa_id);
+            $cant = $this->categoria_model->savefull($this->post('formulario'), $usuario_token->empresa_id);
+            if (!is_null($cant)) {
+                $this->response(array('status'=>TRUE,'formulario' => 'Formulario registrado con  '.$cant.'  campos'), REST_Controller::HTTP_OK);
+            } else {
+                $this->response(array('status'=>FALSE,'error'=> 'Algo se ha roto en el servidor...'), REST_Controller::HTTP_BAD_REQUEST);
+            }
+        } else {
+            if (empty($is_valid_token) || $is_valid_token['status'] === FALSE) {
+                $this->response(['status' => FALSE, 'message' => $is_valid_token['message']], REST_Controller::HTTP_NOT_FOUND);
+            } else {
+                $this->response(['status' => FALSE, 'message' => 'Invalid user'], REST_Controller::HTTP_NOT_FOUND);
+            }
+        }
+    }
+
+
+    /*public function index_post() {
         //validar token
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
@@ -128,6 +154,6 @@ class Categoria extends REST_Controller {
                 $this->response(['status' => FALSE, 'message' => 'Invalid user'], REST_Controller::HTTP_NOT_FOUND);
             }
         }
-    }
+    }*/
 
 }

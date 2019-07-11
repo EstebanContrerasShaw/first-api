@@ -30,9 +30,6 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 /tests/tests/
 /tests/results/
 
-informes/*
-fotosmecanico/*
-fotosmecanicos/*
-fotosAuto/*
-anexos/*
+
+anexos/
 !anexos/logo.png
