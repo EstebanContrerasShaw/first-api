@@ -27,7 +27,7 @@ class Inspeccion extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 3)))) {
             $inspeccion = $this->inspeccion_model->get();
             if (!is_null($inspeccion)) {
                 $this->response(array('status' => TRUE, 'inspeccion' => $inspeccion), REST_Controller::HTTP_OK);
@@ -48,7 +48,7 @@ class Inspeccion extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 3)))) {
             if (!$id) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }          
@@ -81,7 +81,7 @@ class Inspeccion extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 3)))) {
             if (!$id) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
@@ -112,7 +112,7 @@ class Inspeccion extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 3)))) {
             if (!$id) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
@@ -141,7 +141,7 @@ class Inspeccion extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 3)))) {
             if (!$id) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
@@ -170,7 +170,7 @@ class Inspeccion extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 3)))) {
             if (!$id) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
@@ -200,7 +200,7 @@ class Inspeccion extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(3)))) {
             if (!$id) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
@@ -233,7 +233,7 @@ class Inspeccion extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 3, 4, 5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE ) {
             if (!$this->post('inspeccion_id') || !is_numeric($this->post('inspeccion_id'))) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
@@ -278,7 +278,7 @@ class Inspeccion extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(3)))) {
             if (!$this->post('inspeccion_id') || !is_numeric($this->post('inspeccion_id'))) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
@@ -313,7 +313,7 @@ class Inspeccion extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 3, 4, 5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE ) {
             if (!$this->post('inspeccion')) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
@@ -322,7 +322,6 @@ class Inspeccion extends REST_Controller {
                 if ($id == (-1)) {
                     $this->response(array('status' => FALSE, 'error' => 'El Número de orden ingresado ya existe'), REST_Controller::HTTP_BAD_REQUEST);
                 } else {
-                    $this->log_inspeccion_model->save($id);
                     $this->response(array('status' => TRUE, 'inspeccion' => $id), REST_Controller::HTTP_OK);
                 }
             } else {
@@ -347,14 +346,14 @@ class Inspeccion extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 3, 4, 5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE ) {
             if (!$this->post('valor_campo')) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
             $valor_campo = $this->post('valor_campo');
             $flag = $this->inspeccion_model->get($valor_campo[0]['inspeccion_id']);
             if (!is_null($flag)) {
-                $flagdetalle = $this->valor_campo_model->saveDetalle($valor_campo);
+                $flagdetalle = $this->valor_campo_model->saveDetalle($valor_campo,$usuario_token->empresa_id);
             }
             if (!is_null($flagdetalle)) {
                 $this->response(array('detalle' => 'Registrado'), REST_Controller::HTTP_OK);
@@ -380,11 +379,12 @@ class Inspeccion extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 3, 4, 5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE ) {
             if (!$this->post('fotos_auto')) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
             $foto = $this->post('fotos_auto');
+            $foto['empresa_id']  = $usuario_token->empresa_id;
             $flag = $this->inspeccion_model->get($foto['inspeccion_id']);
             if (!is_null($flag)) {
                 $flagfotos = $this->fotos_auto_model->save($foto);
@@ -412,7 +412,7 @@ class Inspeccion extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 3, 4, 5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE ) {
             if (!$this->post('fotos_auto')) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
@@ -440,7 +440,7 @@ class Inspeccion extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 3, 4, 5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE ) {
             if (!$this->put('inspeccion')) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
@@ -541,7 +541,7 @@ class Inspeccion extends REST_Controller {
         $inspeccion = $this->inspeccion_model->get($idInspeccion);
         if (!is_null($inspeccion)) {
             $cliente= $this->solicitud_model->get($inspeccion['solicitud_id'])['email'];
-            $empresa= $this->empresa_model->get($nspeccion['empresa_id'])['empresa'];
+            $empresa= $this->empresa_model->get($inspeccion['empresa_id'])['empresa'];
 
             $archivo = 'anexos/'.$empresa.'/informes/Inspeccion-' . $idInspeccion . '.pdf';
         
@@ -568,6 +568,7 @@ class Inspeccion extends REST_Controller {
                             <p>
                                 Este mail es generado de manera automática, por favor NO RESPONDER.<br>
                             </p>
+                            <p>Atentamente. Equipo de Optimuscar</p>
                         </body>
                         </html>";
                 

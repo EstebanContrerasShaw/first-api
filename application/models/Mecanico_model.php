@@ -232,7 +232,7 @@ class Mecanico_model extends CI_Model {
             'apellidos' => $usuario['apellidos'],
             'email' => $usuario['email'],
             'celular' => $usuario['celular'],
-            'usuario_tipo_id' => 4,
+            'usuario_tipo_id' => 2,
             'empresa_id' => $usuario['empresa_id']
         );
     }

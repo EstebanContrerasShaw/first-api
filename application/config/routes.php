@@ -73,7 +73,6 @@ $route['([a-z_]+)']['options'] = 'sesion/index';
 //rutas pdf
 $route['pdf/vista/(:num)']['get'] = 'pdf/vista/$1'; 
 $route['pdf/informe/(:num)']['get'] = 'pdf/pdf/$1'; 
-$route['pdf/correo/(:num)']['get'] = 'pdf/correo/$1'; 
 $route['pdf/ver/(:num)']['get'] = 'pdf/verInforme/$1'; 
 $route['pdf/descargar/(:num)']['get'] = 'pdf/descargarInforme/$1'; 
 
@@ -100,7 +99,7 @@ $route['admins/(:num)']['delete'] = 'api/admin/index/$1'; //cambio estado, en us
 //rutas categoria
 $route['categorias']['get'] = 'api/categoria/index'; 
 $route['categorias/(:num)']['get']= 'api/categoria/find/$1';
-$route['categorias/(:num)/campos']['get']= 'api/campo/findCategoria/$1';
+$route['categorias/formulario']['get']= 'api/categoria/formulario';
 $route['categorias']['post'] = 'api/categoria/index';
 $route['categorias/completo']['post'] = 'api/categoria/full'; 
 //$route['categorias/(:num)']['put'] = 'api/categoria/index/$1'; 

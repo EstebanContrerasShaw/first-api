@@ -19,7 +19,7 @@ class Admin extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1,5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(3)))) {
             $admin = $this->admin_model->get();
             if (!is_null($admin)) {
                 $this->response(array('status'=>TRUE,'admin' => $admin), Restserver\Libraries\REST_Controller::HTTP_OK);
@@ -40,7 +40,7 @@ class Admin extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1,5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(3)))) {
             if (!$id) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
@@ -64,7 +64,7 @@ class Admin extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1,5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(3)))) {
             if (!$this->post('admin')) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
@@ -100,7 +100,7 @@ class Admin extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1,5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(3)))) {
             if (!$this->put('admin')) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
@@ -126,7 +126,7 @@ class Admin extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(3)))) {
             if (!$id) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }

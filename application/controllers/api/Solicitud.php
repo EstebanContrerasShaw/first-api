@@ -16,7 +16,7 @@ public function __construct() {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1,5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1,3)))) {
             $solicitud = $this->solicitud_model->get();
         if (!is_null($solicitud)) {
             $this->response(array('status'=>TRUE,'solicitud' => $solicitud), REST_Controller::HTTP_OK);
@@ -36,7 +36,7 @@ public function __construct() {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1,5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1,3)))) {
             if (!$id) {
             $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
         }
@@ -61,7 +61,7 @@ public function __construct() {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1,3,4,5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1,2,3)))) {
         if (!$this->post('solicitud')) {
             $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
         }

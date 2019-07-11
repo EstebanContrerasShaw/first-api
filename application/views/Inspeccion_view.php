@@ -110,7 +110,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <tr>
                         <!--<td><img src="<?php echo '/anexos/gpswox/logo.png' ?>"  height="80"></td>-->
                         <td><img src="<?php echo '/anexos/'.$empresa.'/logo.png' ?>"  height="80"></td>
-                        <td ><label>FORMULARIO INSPECCIÓN</label></td>
+                        <td ><h4><?=strtoupper($empresa) ?></h4><br><label>FORMULARIO INSPECCIÓN</label></td>
                         <td id="datosInspeccion"><b>Fecha:  </b><?php echo date('Y-m-d') ?><br>
                             <b>RUT inspector:  </b><?php echo $mecanico['rut'] . '-' . $mecanico['dv'] ?><br>
                             <b>Nombre Inspector:  </b><?php echo $mecanico['nombres'] . '  ' . $mecanico['apellidos'] ?><br>
@@ -126,15 +126,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <table id="tablaCliente">
                     <tr>
                         <td>Nombre Cliente:</td>
-                        <td><?php echo $cliente['nombres'] . ' ' . $cliente['apellidos'] ?></td>
+                        <td><?php echo $solicitud['nombres'] . ' ' . $solicitud['apellidos'] ?></td>
                         <td>Rut Cliente:</td>
-                        <td><?php echo $cliente['rut'] . '-' . $cliente['dv'] ?></td>
+                        <td><?php echo $solicitud['rut'] . '-' . $solicitud['dv'] ?></td>
                     </tr>
                     <tr>
                         <td>Email Contacto:</td>
-                        <td><?php echo $cliente['email'] ?></td>
+                        <td><?php echo $solicitud['email'] ?></td>
                         <td>Telefono Contacto:</td>
-                        <td><?php echo $cliente['celular'] ?></td>
+                        <td><?php echo $solicitud['celular'] ?></td>
                     </tr>
                 </table>
             </article>

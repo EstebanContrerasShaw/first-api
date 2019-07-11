@@ -68,8 +68,8 @@ class Valor_campo_model extends CI_Model {
         return null;
     }
 
-    public function saveDetalle($detalle) {
-        $query = 'select count(*) as total from campo where estado=1';
+    public function saveDetalle($detalle, $empresa) {
+        $query = "SELECT count(campo.id) AS total FROM campo,categoria WHERE campo.categoria_id=categoria.id AND campo.estado=1 AND categoria.empresa_id= $empresa";
         $contador = 0;
         $arrId = array();
         $total = $this->db->query($query)->row_array();

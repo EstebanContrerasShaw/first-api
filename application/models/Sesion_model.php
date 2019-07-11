@@ -24,7 +24,7 @@ class Sesion_model extends CI_Model {
 
     private function loginHijo($arreglo, $password) {
         //$this->load->library('encryption');
-        if ($arreglo['usuario_tipo_id'] == 1 || $arreglo['usuario_tipo_id'] == 5) {
+        if ($arreglo['usuario_tipo_id'] == 1 || $arreglo['usuario_tipo_id'] == 3) {
             $id = $arreglo['id'];
             $hijoarray = $this->admin_model->get($id);
             $clave = $hijoarray['password'];
@@ -34,7 +34,7 @@ class Sesion_model extends CI_Model {
                 return FALSE;
             }
         }
-        if ($arreglo['usuario_tipo_id'] == 3 || $arreglo['usuario_tipo_id'] == 4) {
+        if ($arreglo['usuario_tipo_id'] == 2) {
             $id = $arreglo['id'];
             $hijoarray = $this->mecanico_model->get($id);
             $clave = $hijoarray['password'];

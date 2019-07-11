@@ -19,7 +19,7 @@ class Mecanico extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 3)))) {
             $mecanico = $this->mecanico_model->get();
             if (!is_null($mecanico)) {
                 $this->response(array('status' => TRUE, 'mecanico' => $mecanico), REST_Controller::HTTP_OK);
@@ -40,7 +40,7 @@ class Mecanico extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 3)))) {
             if (!$id) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
@@ -64,7 +64,7 @@ class Mecanico extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 3)))) {
             if (!$this->post('mecanico')) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
@@ -99,7 +99,7 @@ class Mecanico extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (((in_array($usuario_token->tipo, array(3, 4))) && $usuario_token->id == $id) || (in_array($usuario_token->tipo, array(1, 5))) )) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (((in_array($usuario_token->tipo, array(2))) && $usuario_token->id == $id) || (in_array($usuario_token->tipo, array(1, 3))) )) {
             if (!$this->put('mecanico')) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
@@ -124,7 +124,7 @@ class Mecanico extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 3)))) {
             if (!$this->post('mecanico')) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
@@ -148,7 +148,7 @@ class Mecanico extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(3)))) {
             if (!$this->post('mecanico')) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
@@ -173,7 +173,7 @@ class Mecanico extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 3)))) {
             if (!$id) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
@@ -198,7 +198,7 @@ class Mecanico extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1, 3)))) {
             if (!$id) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }

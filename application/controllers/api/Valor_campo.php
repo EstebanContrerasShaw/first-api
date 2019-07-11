@@ -18,7 +18,7 @@ class Valor_campo extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1,3,4,5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE) {
             $valor_campo = $this->valor_campo_model->get();
             if (!is_null($valor_campo)) {
                 $this->response(array('status'=>TRUE,'valor_campo' => $valor_campo), REST_Controller::HTTP_OK);
@@ -39,7 +39,7 @@ class Valor_campo extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1,3,4,5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE ) {
             if (!$id) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
@@ -63,7 +63,7 @@ class Valor_campo extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1,3,4,5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE ) {
             if (!$id) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
@@ -87,7 +87,7 @@ class Valor_campo extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1,3,4,5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE ) {
             if (!$this->post('valor_campo')) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
@@ -111,11 +111,11 @@ class Valor_campo extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1,3,4,5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE) {
             if (!$this->post('valor_campo')) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
-            $flag = $this->valor_campo_model->saveDetalle($this->post('valor_campo'));
+            $flag = $this->valor_campo_model->saveDetalle($this->post('valor_campo'),$usuario_token->empresa_id);
             if (!is_null($flag)) {
                 $this->response(array('status'=>TRUE,'valor_campo' =>'Registrado'), REST_Controller::HTTP_OK);
             } else {

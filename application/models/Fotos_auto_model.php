@@ -105,7 +105,7 @@ class Fotos_auto_model extends CI_Model{
     private function _setFotos_auto($fotos_auto)
     {
         return array(
-            'ruta' => $this->subirFoto($fotos_auto['imagen'], $fotos_auto['inspeccion_id']),
+            'ruta' => $this->subirFoto($fotos_auto['imagen'], $fotos_auto['empresa_id']),
             'comentario' => $fotos_auto['comentario'],
             'inspeccion_id' => $fotos_auto['inspeccion_id']
         );
@@ -142,7 +142,8 @@ class Fotos_auto_model extends CI_Model{
     private function subirFoto($imagen, $nombre) {
         //$urlnombre = explode(".", $_SERVER['HTTP_HOST']);
         //$subdominio = $urlnombre[0];
-        $subdominio = $this->mecanico_model->getEmpresa($idInspeccion);
+        $empresa = $this->empresa_model->get($nombre);
+        $subdominio = $empresa['empresa'];
         $image_path = 'anexos/'.$subdominio.'/fotosauto/';
         if (!file_exists($image_path)) {
             if(!is_dir('anexos/'.$subdominio)){
@@ -158,24 +159,6 @@ class Fotos_auto_model extends CI_Model{
         return $ruta;
     }
     
-    private function fotoTemp($imagen) {
-        //$urlnombre = explode(".", $_SERVER['HTTP_HOST']);
-        //$subdominio = $urlnombre[0];
-        $subdominio = $this->mecanico_model->getEmpresa($idInspeccion);
-        $image_path = 'anexos/'.$subdominio.'/fotosauto/';
-        if (!file_exists($image_path)) {
-            if(!is_dir('anexos/'.$subdominio)){
-                mkdir('anexos/'.$subdominio, 0777);
-            }
-            mkdir($image_path, 0777);
-        }
-        $baseImagen = $imagen;
-        $data = base64_decode($baseImagen);
-        $ruta = $image_path . 'temp.jpg';
-        file_put_contents($ruta, $data);
-
-        return $ruta;
-    }
 
     
     

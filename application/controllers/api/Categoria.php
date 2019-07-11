@@ -18,7 +18,7 @@ class Categoria extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1,3,4,5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE ) {
             $categoria = $this->categoria_model->get($usuario_token->empresa_id);
             if (!is_null($categoria)) {
                 $this->response(array('status'=>TRUE,'categoria' => $categoria), REST_Controller::HTTP_OK);
@@ -39,11 +39,32 @@ class Categoria extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1,3,4,5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE ) {
             if (!$id) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
             $categoria = $this->categoria_model->get($id);
+            if (!is_null($categoria)) {
+                $this->response(array('status'=>TRUE,'categoria' => $categoria), REST_Controller::HTTP_OK);
+            } else {
+                $this->response(array('status'=>FALSE,'error' => 'categoria no encontrado...'), REST_Controller::HTTP_NOT_FOUND);
+            }
+        } else {
+            if (empty($is_valid_token) || $is_valid_token['status'] === FALSE) {
+                $this->response(['status' => FALSE, 'message' => $is_valid_token['message']], REST_Controller::HTTP_NOT_FOUND);
+            } else {
+                $this->response(['status' => FALSE, 'message' => 'Invalid user'], REST_Controller::HTTP_NOT_FOUND);
+            }
+        }
+    }
+
+    public function formulario_get() {
+        //validar token
+        header("Access-Control-Allow-Origin: *");
+        $is_valid_token = $this->authorization_token->validateToken();
+        $usuario_token = $this->authorization_token->userData();
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE ) {
+            $categoria = $this->categoria_model->getFormulario($usuario_token->empresa_id);
             if (!is_null($categoria)) {
                 $this->response(array('status'=>TRUE,'categoria' => $categoria), REST_Controller::HTTP_OK);
             } else {
@@ -63,7 +84,7 @@ class Categoria extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1,5)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1,3)))) {
             if (!$this->post('formulario')) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }

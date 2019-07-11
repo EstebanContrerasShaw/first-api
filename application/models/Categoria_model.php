@@ -13,7 +13,9 @@ class Categoria_model extends CI_Model {
 
             $query = $this->db->select('*')->from('categoria')->where('id', $id)->get();
             if ($query->num_rows() === 1) {
-                return $query->row_array();
+                $catego = $query->row_array();
+                $catego['campos'] = $this->getCamposPorCat($catego['id']);
+                return $catego;
             }
             return null;
         }
@@ -105,7 +107,24 @@ class Categoria_model extends CI_Model {
         }
     }*/
 
+    public function getFormulario($empresa_id){
+        $query = $this->db->select('*')->from('categoria')->where('empresa_id', $empresa_id)->where('estado', 1)->get();
+        if ($query->num_rows() > 0) {
+            $arrCat = $query->result_array();
+            foreach ($arrCat as &$cat) {                
+                $cat['campos'] = $this->getCamposPorCat($cat['id']);
+            }
+            return $arrCat;
+        }
+    }
 
+    private function getCamposPorCat($catId){
+        $query = $this->db->select('*')->from('campo')->where('categoria_id', $catId)->get();
+        if ($query->num_rows() > 0) {
+            return $query->result_array();
+        }
+        return null;
+    }
 
     public function savefull($formulario,$empresa_id) {
         $contador = 0;
