@@ -22,8 +22,29 @@ class PDF extends REST_Controller {
     }
 
 
-    public function pdf_get($idInspeccion) {
-        $data = $this->getData($idInspeccion);
+
+    public function pdf_get($idInspeccion=null) {
+
+        
+        
+        $fileName = basename('Spotify.apk');
+        $filePath = 'anexos/'.$fileName;
+        if(file_exists($filePath)){
+            // Define headers
+            //header("Cache-Control: public");
+            //header("Content-Description: File Transfer");
+            header("Content-Disposition: attachment; filename=$fileName");
+            header("Content-Type: application/vnd.android.package-archive");
+            header("Content-Transfer-Encoding: binary");
+            
+            // Read the file
+            readfile($filePath);
+            exit;
+        }else{
+            echo 'The file does not exist.';
+        }
+
+        /*$data = $this->getData($idInspeccion);
         if (!is_null($data)) {
             $empresa = $data['empresa'];
             $fotos = $this->fotos_auto_model->getPDFInspeccion($idInspeccion);
@@ -51,7 +72,7 @@ class PDF extends REST_Controller {
             return TRUE;
         } else {
             return null;
-        }
+        }*/
     }
 
     private function getData($idInspeccion) {
@@ -145,7 +166,7 @@ class PDF extends REST_Controller {
             $cliente= $this->solicitud_model->get($inspeccion['solicitud_id'])['email'];
             $empresa= $this->empresa_model->get($inspeccion['empresa_id'])['empresa'];
 
-            $archivo = 'anexos/'.$empresa.'/informes/Inspeccion-' . $idInspeccion . '.pdf';
+            $archivo = 'anexos/logo.png';
         
             if (file_exists($archivo)) {
                 header('Content-type: application/pdf');

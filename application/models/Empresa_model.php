@@ -20,12 +20,12 @@ class Empresa_model extends CI_Model{
         }
         $query = $this->db->select('*')->from('empresa')->get();
         if ($query->num_rows() > 0) {
-            return $query->result_array();
-            /*$todas = $query->result_array();
+            //return $query->result_array();
+            $todas = $query->result_array();
             foreach ($todas as &$emp) {
                 $emp['imagen'] = $this->agregarImagen($emp['logo']);
             }
-            return $todas;*/
+            return $todas;
         }
         return null;
     }
@@ -40,8 +40,16 @@ class Empresa_model extends CI_Model{
     }
     public function update($id,$empresa)
     {
-        $this->db->set($this->_setEmpresaUpdate($empresa))->where('id', $id)->update('empresa');
-        if ($this->db->affected_rows() === 1) {
+        $contar = 0;
+        if(isset($empresa['imagen'])){
+            $this->db->set($this->_setEmpresaUpdate($empresa))->where('id', $id)->update('empresa');
+            $contar += $this->db->affected_rows();
+        }else{
+            $this->db->set($this->_setEmpresa($empresa))->where('id', $id)->update('empresa');
+            $contar += 1;
+        }
+        
+        if ($contar > 0) {
             return true;
         }
         return null;
@@ -88,7 +96,7 @@ class Empresa_model extends CI_Model{
     {
         return array(
             'empresa' => $empresa['empresa'],
-            'logo' => $this->subirFoto($empresa['logo'], $empresa['empresa']),
+            'logo' => $this->subirFoto($empresa['imagen'], $empresa['empresa']),
         );
     }
 
@@ -120,9 +128,6 @@ class Empresa_model extends CI_Model{
         $subdominio = $nombre;
         $image_path = 'anexos/'.$subdominio.'/';
         if (!file_exists($image_path)) {
-            if(!is_dir('anexos/'.$subdominio)){
-                mkdir('anexos/'.$subdominio, 0777);
-            }
             mkdir($image_path, 0777);
         }
         $baseImagen = $imagen;

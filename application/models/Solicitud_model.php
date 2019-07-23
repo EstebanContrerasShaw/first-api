@@ -17,7 +17,7 @@ class Solicitud_model extends CI_Model{
             }
             return null;
         }
-        $query = $this->db->select('*')->from('solicitud')->get();
+        $query = $this->db->query("SELECT id, rut, dv, nombres, apellidos, email, celular, modelo, año, patente, estado, kilometros, registro_fecha_hora,marca_id, (SELECT nombre FROM marca WHERE id=marca_id) AS marca FROM solicitud");
         if ($query->num_rows() > 0) {
             return $query->result_array();
         }

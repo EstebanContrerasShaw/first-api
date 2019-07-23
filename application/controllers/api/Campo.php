@@ -14,13 +14,13 @@ class Campo extends REST_Controller {
         $this->load->library('Authorization_Token');
     }
 
-    /*public function index_get() {
+    public function index_get($empresa_id) {
         //validar token
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(1,3,4,5)))) {
-            $campo = $this->campo_model->get($usuario_token->empresa_id);
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE) {
+            $campo = $this->campo_model->get($empresa_id);
             if (!is_null($campo)) {
                 $this->response(array('status'=>TRUE,'campo' => $campo), REST_Controller::HTTP_OK);
             } else {
@@ -35,7 +35,7 @@ class Campo extends REST_Controller {
         }
     }
 
-    public function find_get($id) {
+   /* public function find_get($id) {
         //validar token
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();

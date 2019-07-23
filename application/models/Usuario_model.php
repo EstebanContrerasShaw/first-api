@@ -79,34 +79,18 @@ class Usuario_model extends CI_Model {
 
 
 
-    private function validate_rut($rut)
-    {
-        $rut = preg_replace('/[^k0-9]/i', '', $rut);
-        $dv  = substr($rut, -1);
-        $numero = substr($rut, 0, strlen($rut)-1);
-        $i = 2;
-        $suma = 0;
-      
-        foreach(array_reverse(str_split($numero)) as $v)
-        {
-             if($i==8)
-                $i = 2;
-            $suma += $v * $i;
-            ++$i;
-        }
-        $dvr = 11 - ($suma % 11);
-
-        if($dvr == 11)
-            $dvr = 0;
-        if($dvr == 10)
-            $dvr = 'K';
-        return $dvr == strtoupper($dv);
-            
-    }
-
     public function exist($email) {
         $result   = $this->db->get_where('usuario', array('email' => $email));
         return ($result->num_rows() > 0)? true: false;
+    }
+    public function existUpdate($id, $email) {
+        $usuario = $this->get($id);
+        if(strcmp( $email , $usuario['email']) == 0){
+            return false;
+        }else{
+            $result   = $this->db->get_where('usuario', array('email' => $email));
+            return ($result->num_rows() > 0)? true: false;
+        }
     }
     public function rutExist($rut) {
         $rut = preg_replace('/[^k0-9]/i', '', $rut);

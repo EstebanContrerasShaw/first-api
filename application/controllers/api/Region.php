@@ -34,6 +34,18 @@ class Region extends REST_Controller {
         }
     }
 
+    public function comunas_get($regid) {
+        if (!$regid) {
+            $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
+        }
+        $region = $this->region_model->getComunas($regid);
+        if (!is_null($region)) {
+            $this->response(array('status'=>TRUE,'comuna' => $region), REST_Controller::HTTP_OK);
+        } else {
+            $this->response(array('status'=>FALSE,'error' => 'region no encontrado...'), REST_Controller::HTTP_NOT_FOUND);
+        }
+    }
+
     public function index_post() {
         //validar token
         header("Access-Control-Allow-Origin: *");

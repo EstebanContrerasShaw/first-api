@@ -68,21 +68,26 @@ class Admin extends REST_Controller {
             if (!$this->post('admin')) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
-            $usuario = $this->post('admin');
-            if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,32}$/', $usuario['password'])) {
-                $this->response(array('status' => FALSE, 'error' => 'Contraseña no valida'), REST_Controller::HTTP_BAD_REQUEST);
+            $admin = $this->post('admin');
+            if( !$this->validate_rut($admin['rut'].'-'.$admin['dv'])){
+                return $this->response(array('error'=> 'Rut inválido'), 
+                    REST_Controller::HTTP_BAD_REQUEST);
             }
-            $id = $this->admin_model->save($usuario);
+            if($this->rut_exist($admin['rut'].'-'.$admin['dv'])){
+                return $this->response(array('error'=> 'El Rut ya existe '), 
+                    REST_Controller::HTTP_BAD_REQUEST);
+            }
+            if($this->email_exist($admin['email'])){
+                return $this->response(array('error'=> 'Email ya existe.'), 
+                    REST_Controller::HTTP_BAD_REQUEST);
+            }
+            if($this->validate_password($admin['password'])){
+                return $this->response(array('error'=> 'Contraseña inválida.'), 
+                    REST_Controller::HTTP_BAD_REQUEST);
+            }
+            $id = $this->admin_model->save($admin);
             if (!is_null($id)) {
-                if($id==(-1)){
-                    $this->response(array('status'=>FALSE,'error'=> 'El Rut ingresado ya existe'), REST_Controller::HTTP_BAD_REQUEST);
-                }
-                else if($id==(-2)){
-                    $this->response(array('status'=>FALSE,'error'=> 'El Correo/Email ingresado ya existe'), REST_Controller::HTTP_BAD_REQUEST);
-                }
-                else{
                 $this->response(array('status'=>TRUE,'admin' => $id), REST_Controller::HTTP_OK);
-            }
             } else {
                 $this->response(array('status'=>FALSE,'error'=> 'Algo se ha roto en el servidor...'), REST_Controller::HTTP_BAD_REQUEST);
             }
@@ -100,11 +105,24 @@ class Admin extends REST_Controller {
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
-        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && (in_array($usuario_token->tipo, array(3)))) {
+        if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE && ((in_array($usuario_token->tipo, array(1)) && $usuario_token->id == $id) || (in_array($usuario_token->tipo, array(3))))) {
             if (!$this->put('admin')) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
-            $update = $this->admin_model->update($id, $this->put('admin'));
+
+            $admin = $this->put('admin');
+            if($this->email_exist_update($id, $admin['email'])){
+                return $this->response(array('error'=> 'Email ya existe.'), 
+                    REST_Controller::HTTP_BAD_REQUEST);
+            }
+
+            $update = null;
+            if($usuario_token->tipo == 3){
+                $update = $this->admin_model->updateAsSuper($id, $this->put('admin'));
+            }
+            if($usuario_token->tipo == 1){
+                $update = $this->admin_model->update($id, $this->put('admin'));
+            }
             if (!is_null($update)) {
                 $this->response(array('status'=>TRUE,'admin' => 'admin actualizado!'), REST_Controller::HTTP_OK);
             } else {
@@ -130,7 +148,7 @@ class Admin extends REST_Controller {
             if (!$id) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
-            $padre = $this->admin_model->estado($id);
+            $padre = $this->admin_model->estado($id,0);
             if (!is_null($padre)) {
                 $this->response(array('status'=>TRUE,'admin' => 'admin eliminado!'), REST_Controller::HTTP_OK);
             } else {
@@ -143,6 +161,54 @@ class Admin extends REST_Controller {
                 $this->response(['status' => FALSE, 'message' => 'Invalid user'], REST_Controller::HTTP_NOT_FOUND);
             }
         }
+    }
+
+
+    // funciones Auxiliares de validacion
+    // 
+    
+    private function validate_rut($rut)
+    {
+        $rut = preg_replace('/[^k0-9]/i', '', $rut);
+        $dv  = substr($rut, -1);
+        $numero = substr($rut, 0, strlen($rut)-1);
+        $i = 2;
+        $suma = 0;
+      
+        foreach(array_reverse(str_split($numero)) as $v)
+        {
+             if($i==8)
+                $i = 2;
+            $suma += $v * $i;
+            ++$i;
+        }
+        $dvr = 11 - ($suma % 11);
+
+        if($dvr == 11)
+            $dvr = 0;
+        if($dvr == 10)
+            $dvr = 'K';
+        return $dvr == strtoupper($dv);
+            
+    }
+
+    public function rut_exist($rut){
+        return $this->usuario_model->rutExist($rut);        
+        
+    }
+    public function email_exist($email){
+        return $this->usuario_model->exist($email);
+    }
+    public function email_exist_update($id, $email){
+        return $this->usuario_model->existUpdate($id, $email);
+    }
+
+    private function validate_password($password)
+    {
+        if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,32}$/', $password )) {
+            return TRUE;
+        }
+        return FALSE ;
     }
 
 }

@@ -27,6 +27,18 @@ class Region_model extends CI_Model{
         return null;
     }
     
+    public function getComunas($id)
+    {
+        if (!is_null($id)) {
+            
+            $query = $this->db->select('*')->from('comuna')->where('region_id', $id)->get();
+            if ($query->num_rows() > 0) {
+                return $query->result_array();
+            }
+            return null;
+        }
+    }
+
     public function save($region)
     {
         $this->db->set($this->_setRegion($region))->insert('region');

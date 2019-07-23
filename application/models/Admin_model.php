@@ -66,13 +66,35 @@ class Admin_model extends CI_Model{
         return null;
     }
 
-
     public function update($id,$admin)
     {
-
-        $this->db->set($this->_setAdminUpdate($admin))->where('usuario_id', $id)->update('admin');
+        $contar = 0;
+        if(isset($admin['password'])  && ($admin['password'] != '') && isset($admin['oldpassword'])){
+            $passantigua = $admin['oldpassword'];
+            $adminbased = $this->admin_model->get($id);
+            $clave = $adminbased['password'];
+            if(password_verify($passantigua, $clave)){
+                $this->db->set($this->_setAdminUpdate($admin))->where('usuario_id', $id)->update('admin');
+                $contar += $this->db->affected_rows();
+            }
+        }
         $this->db->set($this->_setUsuarioUpdate($admin))->where('id', $id)->update('usuario');
-        if ($this->db->affected_rows() > 0) {
+        $contar += $this->db->affected_rows();
+        if ($contar > 0) {
+            return true;
+        }
+        return null;
+    }
+    public function updateAsSuper($id,$admin)
+    {
+        $contar=0;
+        if(isset($admin['password'])  && ($admin['password'] != '')){
+            $this->db->set($this->_setAdminUpdate($admin))->where('usuario_id', $id)->update('admin');
+            $contar += $this->db->affected_rows();
+        }
+        $this->db->set($this->_setUsuarioUpdate($admin))->where('id', $id)->update('usuario');
+        $contar += $this->db->affected_rows();
+        if ($contar > 0) {
             return true;
         }
         return null;
@@ -101,8 +123,7 @@ class Admin_model extends CI_Model{
         $clave=password_hash($admin["password"],PASSWORD_DEFAULT);
         return array(
             'password' => $clave,
-            'usuario_id' => $id,
-            'comuna_id' => $admin['comuna_id']
+            'usuario_id' => $id
         );
     }
     
@@ -110,8 +131,7 @@ class Admin_model extends CI_Model{
     {
         $clave=password_hash($admin["password"],PASSWORD_DEFAULT);
         return array(
-            'password' => $clave,
-            'comuna_id' => $admin['comuna_id']
+            'password' => $clave
         );
     }
     private function _setUsuario($usuario) {
@@ -135,7 +155,6 @@ class Admin_model extends CI_Model{
             'apellidos' => $usuario['apellidos'],
             'email' => $usuario['email'],
             'celular' => $usuario['celular'],
-            'estado' => $usuario['estado'],
             'empresa_id' => $usuario['empresa_id']
         );
     }

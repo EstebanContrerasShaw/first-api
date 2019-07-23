@@ -98,6 +98,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             .importancia{
                 background-color: #ed7669;
             }
+            #clienteinfo{
+                border: inherit;
+                padding: 15px 0px;
+            }
 
         </style>
 
@@ -120,7 +124,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             </article>
         </section>
         <br>
-        <section id="formulario">
+        <section id="clienteinfo">
             <article id="datoCliente">
                 <b>Datos del Cliente</b>
                 <table id="tablaCliente">
@@ -138,7 +142,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     </tr>
                 </table>
             </article>
+        </section>
+            
 
+        <section id="formulario">
             <!-- Aqui va un FOR para categorias-->
             <?php foreach ($detalle as $det): ?>
                 <article id="detalle">

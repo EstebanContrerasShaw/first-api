@@ -34,6 +34,32 @@ class Mecanico_model extends CI_Model {
         return null;
     }
 
+    public function getByEmpresa($empresa_id,$id = null) {
+        if (!is_null($id)) {
+            $conid = "SELECT u.id,u.rut,u.dv,u.nombres,u.apellidos,u.email,u.celular,u.estado,u.registro_fecha_hora,u.usuario_tipo_id,(SELECT nombre from usuario_tipo WHERE id=u.usuario_tipo_id) as tipo,m.foto_perfil_ruta,m.direccion,m.comuna_id,(SELECT nombre FROM comuna WHERE id=m.comuna_id) as comuna, m.password, u.empresa_id, (SELECT empresa FROM empresa WHERE id=u.empresa_id) as empresa FROM usuario as u, mecanico as m WHERE m.usuario_id=u.id AND u.empresa_id=$empresa_id  AND u.id=$id";
+            $query = $this->db->query($conid);
+            //$query = $this->db->select('*')->from('mecanico')->where('usuario_id', $id)->get();
+            if ($query->num_rows() === 1) {
+                $arreglo = $query->row_array();
+
+                // esto de Aqui es para probar la desencriptacion, no deberia estar aqui o quizas si - averiguar
+                //$clave=$this->encryption->decrypt($arreglo['password']);
+                //$arreglo['password']=$clave;
+                $arreglo['imagen'] = $this->agregarImagen($arreglo['foto_perfil_ruta']);
+                return $arreglo;
+            }
+            return null;
+        }
+
+         $sentencia = "SELECT u.id,u.rut,u.dv,u.nombres,u.apellidos,u.email, u.estado, u.empresa_id, u.celular, (SELECT COUNT(inspeccion.id) FROM inspeccion WHERE inspeccion.mecanico_usuario_id=u.id and inspeccion.estado<3) as pendientes  FROM usuario as u, mecanico as m WHERE m.usuario_id=u.id AND u.empresa_id=$empresa_id ";
+        $query = $this->db->query($sentencia);
+        //$query = $this->db->select('*')->from('mecanico')->get();
+        if ($query->num_rows() > 0) {
+            return $query->result_array();
+        }
+        return null;
+    }
+
     /*public function save($id, $mecanico) {
         $this->db->set($this->_setMecanico($id, $mecanico))->insert('mecanico');
         if ($this->db->affected_rows() === 1) {
@@ -77,10 +103,15 @@ class Mecanico_model extends CI_Model {
 
     public function update($id,$mecanico)
     {
-
+        $contar = 0;
         $this->db->set($this->_setMecanicoUpdate($mecanico))->where('usuario_id', $id)->update('mecanico');
+        $contar += $this->db->affected_rows();
         $this->db->set($this->_setUsuarioUpdate($mecanico))->where('id', $id)->update('usuario');
-        if ($this->db->affected_rows() > 0) {
+        $contar += $this->db->affected_rows();
+        if ($contar > 0) {
+            return true;
+        }
+        if(isset($mecanico['imagen'])){
             return true;
         }
         return null;
@@ -139,7 +170,7 @@ class Mecanico_model extends CI_Model {
     }
 
     public function getEstado($id) {
-        $query = $this->db->query("SELECT estado FROM usuario WHERE usuario_tipo_id IN (3,4) AND id=$id ");
+        $query = $this->db->query("SELECT estado FROM usuario WHERE usuario_tipo_id=2  AND id=$id ");
         if ($this->db->affected_rows() === 1) {
             return $query->row_array()['estado'];
         }
@@ -147,7 +178,15 @@ class Mecanico_model extends CI_Model {
     }
 
     public function estadoOff($id) {
-        $this->db->query("UPDATE usuario set estado=0 where usuario_tipo_id IN (3,4) AND id=$id ");
+        $this->db->query("UPDATE usuario set estado=0 where usuario_tipo_id=2 AND id=$id ");
+        if ($this->db->affected_rows() === 1) {
+            return true;
+        }
+        return null;
+    }
+
+    public function estadoOut($id) {
+        $this->db->query("UPDATE usuario set estado=2 where usuario_tipo_id=2 AND id=$id ");
         if ($this->db->affected_rows() === 1) {
             return true;
         }
@@ -155,7 +194,7 @@ class Mecanico_model extends CI_Model {
     }
 
     public function estadoOn($id) {
-        $this->db->query("UPDATE usuario set estado=1 where usuario_tipo_id IN (3,4) AND id=$id ");
+        $this->db->query("UPDATE usuario set estado=1 where usuario_tipo_id=2 AND id=$id ");
         if ($this->db->affected_rows() === 1) {
             return true;
         }
@@ -208,7 +247,7 @@ class Mecanico_model extends CI_Model {
         $clave = password_hash($mecanico["password"], PASSWORD_DEFAULT);
         return array(
             'usuario_id' => $id,
-            'foto_perfil_ruta' => $this->subirFoto($mecanico['imagen'], $mecanico['rut'], $mecanico['empresa_id']),
+            'foto_perfil_ruta' => $this->subirFoto($mecanico['imagen'], $mecanico['rut']),
             'password' => $clave,
             'direccion' => $mecanico['direccion'],
             'comuna_id' => $mecanico['comuna_id']
@@ -216,12 +255,24 @@ class Mecanico_model extends CI_Model {
     }
 
     private function _setMecanicoUpdate($mecanico) {
-        $clave = password_hash($mecanico["password"], PASSWORD_DEFAULT);
-        return array(
+        if(isset($mecanico['imagen']) && isset($mecanico['rut'])){
+            $this->subirFoto($mecanico['imagen'], $mecanico['rut']);
+        }
+        if(isset($mecanico['password']) && ($mecanico['password'] != '')){
+            $clave = password_hash($mecanico["password"], PASSWORD_DEFAULT);
+            return array(
             'password' => $clave,
             'direccion' => $mecanico['direccion'],
             'comuna_id' => $mecanico['comuna_id']
         );
+        }else{
+            return array(
+            'direccion' => $mecanico['direccion'],
+            'comuna_id' => $mecanico['comuna_id']
+        );
+        }
+        
+        
     }
 
     private function _setUsuario($usuario) {
@@ -245,7 +296,7 @@ class Mecanico_model extends CI_Model {
             'apellidos' => $usuario['apellidos'],
             'email' => $usuario['email'],
             'celular' => $usuario['celular'],
-            'estado' => $usuario['estado'],
+            'estado' => 1,
             'empresa_id' => $usuario['empresa_id']
         );
     }
@@ -269,15 +320,11 @@ class Mecanico_model extends CI_Model {
         return $imgstr;
     }
 
-    private function subirFoto($imagen, $nombre,$empresaId) {
+    private function subirFoto($imagen, $nombre) {
         //$urlnombre = explode(".", $_SERVER['HTTP_HOST']);
         //$subdominio = $urlnombre[0];
-        $empresa = $this->getEmpresaPorId($empresaId);
-        $image_path = 'anexos/'.$empresa.'/fotosmecanico/';
+        $image_path = 'anexos/fotosmecanico/';
         if (!file_exists($image_path)) {
-            if(!is_dir('anexos/'.$empresa)){
-                mkdir('anexos/'.$empresa, 0777);
-            }
             mkdir($image_path, 0777);
         }
         $baseImagen = $imagen;

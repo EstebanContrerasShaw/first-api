@@ -7,6 +7,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <head>
         <meta charset="utf-8">
         <title>Inspeccion</title>
+
+
+        <style type="text/css">
+            #fotos{
+                border: inherit;
+                padding: 15px 25px; 
+            }
+            table,td,th {
+                border-bottom: 2px solid #0069d9;
+                border-top: 2px solid #0069d9;
+                border-left: 0;
+                border-right: 0;
+            }
+        </style>
+
     </head>
 
     <body>
@@ -24,7 +39,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     
                     foreach ($fotos as $imagen): ?>
                         <tr>
-                            <td><img src="<?php echo base_url().$imagen['ruta'] ?>" height="180" /></td>
+                            <td align="center"><img class="imgFoto" src="<?php echo base_url().$imagen['ruta'] ?>" height="180" /></td>
                             <td><?php echo $imagen['comentario'].'--'.base_url().$imagen['ruta'] ?></td>
                         </tr>
                     <?php endforeach; ?>

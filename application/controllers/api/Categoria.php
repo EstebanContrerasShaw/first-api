@@ -13,13 +13,13 @@ class Categoria extends REST_Controller {
         $this->load->library('Authorization_Token');
     }
 
-    public function index_get() {
+    public function index_get($empresa_id) {
         //validar token
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
         if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE ) {
-            $categoria = $this->categoria_model->get($usuario_token->empresa_id);
+            $categoria = $this->categoria_model->get($empresa_id);
             if (!is_null($categoria)) {
                 $this->response(array('status'=>TRUE,'categoria' => $categoria), REST_Controller::HTTP_OK);
             } else {
@@ -58,13 +58,13 @@ class Categoria extends REST_Controller {
         }
     }
 
-    public function formulario_get() {
+    public function formulario_get($empresa_id) {
         //validar token
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
         $usuario_token = $this->authorization_token->userData();
         if (!empty($is_valid_token) && $is_valid_token['status'] === TRUE ) {
-            $categoria = $this->categoria_model->getFormulario($usuario_token->empresa_id);
+            $categoria = $this->categoria_model->getFormulario($empresa_id);
             if (!is_null($categoria)) {
                 $this->response(array('status'=>TRUE,'categoria' => $categoria), REST_Controller::HTTP_OK);
             } else {
@@ -79,7 +79,7 @@ class Categoria extends REST_Controller {
         }
     }
 
-    public function full_post() {
+    public function full_post($empresa_id) {
         //validar token
         header("Access-Control-Allow-Origin: *");
         $is_valid_token = $this->authorization_token->validateToken();
@@ -88,8 +88,8 @@ class Categoria extends REST_Controller {
             if (!$this->post('formulario')) {
                 $this->response(null, REST_Controller::HTTP_BAD_REQUEST);
             }
-            $this->ctegoria_model->deletefull($usuario_token->empresa_id);
-            $cant = $this->categoria_model->savefull($this->post('formulario'), $usuario_token->empresa_id);
+            $this->categoria_model->deletefull($empresa_id);
+            $cant = $this->categoria_model->savefull($this->post('formulario'), $empresa_id);
             if (!is_null($cant)) {
                 $this->response(array('status'=>TRUE,'formulario' => 'Formulario registrado con  '.$cant.'  campos'), REST_Controller::HTTP_OK);
             } else {

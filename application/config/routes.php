@@ -89,7 +89,7 @@ $route['admins/(:num)']['put'] = 'api/admin/index/$1';
 $route['admins/(:num)']['delete'] = 'api/admin/index/$1'; //cambio estado, en usuario
 
 //rutas campo
-//$route['campos']['get'] = 'api/campo/index'; 
+$route['campos/(:num)']['get'] = 'api/campo/index/$1'; 
 //$route['campos/(:num)']['get']= 'api/campo/find/$1';
 //$route['campos/categorias/(:num)']['get']= 'api/campo/findCategoria/$1';
 //$route['campos']['post'] = 'api/campo/index'; 
@@ -97,11 +97,10 @@ $route['admins/(:num)']['delete'] = 'api/admin/index/$1'; //cambio estado, en us
 //$route['campos/(:num)']['delete'] = 'api/campo/index/$1'; 
 
 //rutas categoria
-$route['categorias']['get'] = 'api/categoria/index'; 
-$route['categorias/(:num)']['get']= 'api/categoria/find/$1';
-$route['categorias/formulario']['get']= 'api/categoria/formulario';
-$route['categorias']['post'] = 'api/categoria/index';
-$route['categorias/completo']['post'] = 'api/categoria/full'; 
+$route['categorias/(:num)']['get'] = 'api/categoria/index/$1'; 
+//$route['categorias/formulario']['get']= 'api/categoria/formulario';
+//$route['categorias']['post'] = 'api/categoria/index';
+$route['categorias/completo/(:num)']['post'] = 'api/categoria/full/$1'; 
 //$route['categorias/(:num)']['put'] = 'api/categoria/index/$1'; 
 //$route['categorias/(:num)']['delete'] = 'api/categoria/index/$1'; 
 
@@ -148,6 +147,7 @@ $route['marcas/(:num)']['put'] = 'api/marca/index/$1';
 //rutas mecanico
 $route['mecanicos']['get'] = 'api/mecanico/index'; 
 $route['mecanicos/(:num)']['get']= 'api/mecanico/find/$1'; 
+$route['mecanicos/empresa/(:num)']['get'] = 'api/mecanico/empresa/$1'; 
 $route['mecanicos']['post'] = 'api/mecanico/index'; 
 $route['mecanicos/(:num)']['put'] = 'api/mecanico/index/$1'; 
 $route['mecanicos/setestados']['post'] = 'api/mecanico/estado';
@@ -158,6 +158,7 @@ $route['mecanicos/(:num)/activar']['put'] = 'api/mecanico/activar/$1';
 //rutas region
 $route['regiones']['get'] = 'api/region/index'; 
 $route['regiones/(:num)']['get']= 'api/region/find/$1'; 
+$route['regiones/(:num)/comunas']['get'] = 'api/region/comunas/$1'; 
 $route['regiones']['post'] = 'api/region/index'; 
 $route['regiones/(:num)']['put'] = 'api/region/index/$1'; 
 
